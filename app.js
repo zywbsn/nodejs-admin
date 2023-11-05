@@ -1,4 +1,4 @@
-import {Login} from "./service/User/index.js";
+import { Login } from "./service/User/index.js";
 
 LogMessage();
 
@@ -7,9 +7,7 @@ import express from "express";
 
 import UserRouter from "./router/User/index.js";
 import MenuRouter from "./router/Menu/index.js";
-import {LogMessage} from "./utils/index.js";
-
-
+import { LogMessage } from "./utils/index.js";
 
 const app = express();
 
@@ -35,5 +33,5 @@ app.post('/login', Login);
 const port = 9000;
 
 app.listen(port, () => {
-  console.log(`(ง •_•)ง  Server running at http://127.0.0.1:${port}`);
+  console.log(`(ง •_•)ง Server running at http://127.0.0.1:${ port }`);
 });

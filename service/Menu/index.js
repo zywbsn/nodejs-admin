@@ -4,11 +4,11 @@ const Table = "menu_list";//数据表
 
 //创建菜单
 export const DeleteMenu = async (request, response) => {
-  const {id} = request.query;
+  const { id } = request.query;
   const sql = `delete from ${Table} where id = ${id}`;
   console.log("sql", sql);
   try {
-    const {rows} = await query(sql);
+    const { rows } = await query(sql);
     response.send({
       status: 200,
       message: "请求成功",
@@ -25,12 +25,12 @@ export const DeleteMenu = async (request, response) => {
 
 //创建菜单
 export const CreateMenu = async (request, response) => {
-  const {label, key, component, father, is_father} = request.body;
+  const { label, key, component, father, is_father } = request.body;
   const sql = `insert into  ${Table} set label="${label}",path="${key}",component="${component}",father="${father}",is_father=${is_father}`;
 
   try {
     console.log("sql", sql);
-    const {rows} = await query(sql);
+    const { rows } = await query(sql);
     response.send({
       status: 200,
       message: "请求成功",
@@ -47,11 +47,11 @@ export const CreateMenu = async (request, response) => {
 
 //更新菜单
 export const UpdateMenu = async (request, response) => {
-  const {id, label, key, component, father, is_father} = request.body;
+  const { id, label, key, component, father, is_father } = request.body;
   const sql = `update ${Table} set label="${label}",path="${key}",component="${component}",father="${father}",is_father=${is_father} where id=${id}`;
-  console.log("Sql",sql)
+  console.log("Sql", sql)
   try {
-    const {rows} = await query(sql);
+    const { rows } = await query(sql);
     response.send({
       status: 200,
       message: "请求成功",
@@ -68,13 +68,13 @@ export const UpdateMenu = async (request, response) => {
 
 //菜单列表
 export async function GetMenuList(req, res) {
-  const {page, size,label,key} = req.query;
-  if((label === undefined || label === "") && (key === undefined || key === "")) {
+  const { page, size, label = "", key = "" } = req.query;
+  if(parseInt(page) === -1 || (label === "" && key === "")) {
     const sql = `select * from ${Table}`;
     try {
-      const {rows} = await query(sql);
+      const { rows } = await query(sql);
       rows.forEach((item) => {
-        const {path} = item;
+        const { path } = item;
         item.key = path;
         delete item.path;
         if(item.is_father === 1) item.children = [];
@@ -96,13 +96,14 @@ export async function GetMenuList(req, res) {
     }
     return;
   }
+  const sql = `select * from ${Table} where label like "%${label}%" and path like "%${key}%" limit ${parseInt(size)} offset ${(parseInt(page) - 1) * parseInt(size)}`;
 
-  const sql = `select * from ${Table} where label like "%${label}%" and path like "%${key}%"`;
+  // const sql = `select * from ${Table} where label like "%${label}%" and path like "%${key}%"`;
+  console.log("sql", sql)
   try {
-    const {rows} = await query(sql);
-    console.log(sql)
+    const { rows } = await query(sql);
     rows.forEach((item) => {
-      const {path} = item;
+      const { path } = item;
       item.key = path;
       delete item.path;
     });
