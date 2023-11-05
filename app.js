@@ -7,7 +7,7 @@ import express from "express";
 
 import UserRouter from "./router/User/index.js";
 import MenuRouter from "./router/Menu/index.js";
-import { LogMessage } from "./utils/index.js";
+import { CheckToken, LogMessage } from "./utils/index.js";
 
 const app = express();
 
@@ -26,9 +26,12 @@ app.use(express.json());
 //   });
 // });
 
+app.post('/login', Login);
+
+//校验 token 有效期
+app.use(CheckToken);
 app.use("/user", UserRouter);
 app.use("/menu", MenuRouter);
-app.post('/login', Login);
 
 const port = 9000;
 

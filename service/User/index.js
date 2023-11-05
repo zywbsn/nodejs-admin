@@ -1,5 +1,5 @@
 import query from "../../db/index.js";
-import { GetUuid } from "../../utils/index.js";
+import { GetToken, GetUuid } from "../../utils/index.js";
 
 const Table = "user_list";//数据表
 
@@ -7,9 +7,8 @@ const Table = "user_list";//数据表
 export const Login = async (request, response) => {
   const { username, password } = request.body;
   const sql = `select * from ${Table} where username = "${username}"`;
-  console.log("sql", sql);
-  console.log("password", password);
-  const token = "token";
+  const token = GetToken();
+  console.log("token", token);
   try {
     const { rows } = await query(sql);
     const result = JSON.parse(JSON.stringify(rows));
@@ -130,6 +129,7 @@ export const CreateUser = async (request, response) => {
 export async function GetUserList(req, res) {
   const { page, size, nickname = "", username = "" } = req.query;
   const sql = `select * from ${Table} where nickname like "%${nickname}%" and username like "%${username}%" limit ${parseInt(size)} offset ${(parseInt(page) - 1) * parseInt(size)}`;
+  const sqlCount = `select count(*) as total from ${Table} where nickname like "%${nickname}%" and username like "%${username}%" limit ${parseInt(size)} offset ${(parseInt(page) - 1) * parseInt(size)}`;
   console.log("sql", sql);
   try {
     const { rows } = await query(sql);
@@ -137,7 +137,10 @@ export async function GetUserList(req, res) {
       status: 200,
       message: "请求成功",
       data: {
-        list: rows
+        page: parseInt(page),
+        size: parseInt(size),
+        list: rows,
+        total: JSON.parse(JSON.stringify(await query(sqlCount))).rows[0].total
       }
     });
   } catch(err) {
